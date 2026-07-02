@@ -15,7 +15,7 @@ from memory import memory
 GEMINI_API_KEY = "your-gemini-api-key-here"
 genai.configure(api_key=GEMINI_API_KEY)
 
-# System prompt for OrderEase agent
+
 SYSTEM_PROMPT = """
 You are OrderEase, a friendly and intelligent personal concierge agent 
 for food ordering and shopping in Chennai, India.
@@ -65,24 +65,23 @@ class OrderEaseAgent:
     def process_message(self, user_message):
         """Process user message and return response"""
         
-        # Get user memory
+       
         user = memory.get_user(self.current_user)
         
-        # Add context to message
+     
         context = f"""
 User message: {user_message}
 User preferences: {memory.get_recommendations(self.current_user)}
 """
         
-        # Check for specific intents
         message_lower = user_message.lower()
         
-        # Search restaurants intent
+
         if any(word in message_lower for word in 
                ["food", "eat", "hungry", "restaurant", 
                 "biryani", "dosa", "pizza", "order food"]):
             
-            # Extract cuisine if mentioned
+            
             cuisine = None
             cuisines = ["biryani", "dosa", "pizza", "south indian", 
                        "north indian", "chinese", "chettinad"]
@@ -103,7 +102,7 @@ User preferences: {memory.get_recommendations(self.current_user)}
             
             context += f"\nAvailable restaurants:\n{restaurant_info}"
         
-        # Track order intent
+    
         elif "track" in message_lower and "OE-" in user_message:
             order_id = [word for word in user_message.split() 
                        if word.startswith("OE-")]
@@ -111,7 +110,7 @@ User preferences: {memory.get_recommendations(self.current_user)}
                 tracking = track_order(order_id[0])
                 context += f"\nOrder tracking info: {tracking}"
         
-        # Search products intent
+   
         elif any(word in message_lower for word in 
                 ["buy", "shop", "product", "earphone", 
                  "phone", "clothes", "grocery"]):
@@ -124,10 +123,10 @@ User preferences: {memory.get_recommendations(self.current_user)}
             ])
             context += f"\nAvailable products:\n{product_info}"
         
-        # Get response from Gemini
+
         response = self.chat.send_message(context)
         
-        # Update user memory based on conversation
+
         if cuisine:
             memory.update_preference(
                 self.current_user, 
@@ -144,8 +143,7 @@ User preferences: {memory.get_recommendations(self.current_user)}
         print("Your Personal AI Concierge for Chennai")
         print("=" * 50)
         print("Type 'quit' to exit\n")
-        
-        # Get user name
+   
         name = input("What's your name? ")
         memory.update_preference(self.current_user, "name", name)
         print(f"\nHello {name}! 👋 How can I help you today?")
@@ -166,7 +164,7 @@ User preferences: {memory.get_recommendations(self.current_user)}
             print(response)
             print()
 
-# Run the agent
+
 if __name__ == "__main__":
     agent = OrderEaseAgent()
     agent.run()
