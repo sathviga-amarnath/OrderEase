@@ -1,7 +1,12 @@
 # OrderEase - AI Personal Concierge Agent
 
 
+# OrderEase - AI Personal Concierge Agent
+
+
+import os
 import google.generativeai as genai
+from dotenv import load_dotenv
 from tools import (
     search_restaurants,
     get_restaurant_menu,
@@ -11,10 +16,14 @@ from tools import (
 )
 from memory import memory
 
-# Configure Gemini API
-GEMINI_API_KEY = "your-gemini-api-key-here"
-genai.configure(api_key=GEMINI_API_KEY)
+# Load environment variables from .env file
+load_dotenv()
 
+# Configure Gemini API safely
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    raise ValueError("GEMINI_API_KEY not found! Please add it to your .env file")
+genai.configure(api_key=GEMINI_API_KEY)
 
 SYSTEM_PROMPT = """
 You are OrderEase, a friendly and intelligent personal concierge agent 
