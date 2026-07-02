@@ -1,0 +1,12 @@
+# Environment variables
+.env
+*.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# API Keys
+secrets.py
+config.py
