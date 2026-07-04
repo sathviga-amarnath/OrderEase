@@ -1,8 +1,5 @@
 # OrderEase - AI Personal Concierge Agent
-
-
-# OrderEase - AI Personal Concierge Agent
-
+# Built for Kaggle 5-Day AI Agents Intensive Capstone
 
 import os
 from google import genai
@@ -64,40 +61,41 @@ Always greet users by name if you know them!
 class OrderEaseAgent:
     def __init__(self):
         self.client = client
-self.chat_history = []
+        self.chat_history = []
         self.current_user = "user_1"
         self.current_order = None
-    
+
     def process_message(self, user_message):
         """Process user message and return response"""
-        
-       
+
+        # Get user memory
         user = memory.get_user(self.current_user)
-        
-     
+
+        # Add context to message
         context = f"""
+System: {SYSTEM_PROMPT}
+
 User message: {user_message}
 User preferences: {memory.get_recommendations(self.current_user)}
 """
-        
-        message_lower = user_message.lower()
-        
 
-        if any(word in message_lower for word in 
-               ["food", "eat", "hungry", "restaurant", 
+        message_lower = user_message.lower()
+        cuisine = None
+
+        # Search restaurants intent
+        if any(word in message_lower for word in
+               ["food", "eat", "hungry", "restaurant",
                 "biryani", "dosa", "pizza", "order food"]):
-            
-            
-            cuisine = None
-            cuisines = ["biryani", "dosa", "pizza", "south indian", 
+
+            cuisines = ["biryani", "dosa", "pizza", "south indian",
                        "north indian", "chinese", "chettinad"]
             for c in cuisines:
                 if c in message_lower:
                     cuisine = c
                     break
-            
+
             restaurants = search_restaurants(cuisine=cuisine)
-            
+
             restaurant_info = "\n".join([
                 f"{i+1}. {r['name']} - {r['area']} "
                 f"| Rating: {r['rating']}⭐ "
@@ -105,20 +103,20 @@ User preferences: {memory.get_recommendations(self.current_user)}
                 f"| Delivery: {r['delivery_time']}"
                 for i, r in enumerate(restaurants[:3])
             ])
-            
+
             context += f"\nAvailable restaurants:\n{restaurant_info}"
-        
-    
+
+        # Track order intent
         elif "track" in message_lower and "OE-" in user_message:
-            order_id = [word for word in user_message.split() 
+            order_id = [word for word in user_message.split()
                        if word.startswith("OE-")]
             if order_id:
                 tracking = track_order(order_id[0])
                 context += f"\nOrder tracking info: {tracking}"
-        
-   
-        elif any(word in message_lower for word in 
-                ["buy", "shop", "product", "earphone", 
+
+        # Search products intent
+        elif any(word in message_lower for word in
+                ["buy", "shop", "product", "earphone",
                  "phone", "clothes", "grocery"]):
             products = search_products(query=user_message)
             product_info = "\n".join([
@@ -128,22 +126,23 @@ User preferences: {memory.get_recommendations(self.current_user)}
                 for i, p in enumerate(products)
             ])
             context += f"\nAvailable products:\n{product_info}"
-        
 
+        # Get response from Gemini
         response = self.client.models.generate_content(
-    model="gemini-2.0-flash",
-    contents=context
-)
+            model="gemini-2.0-flash",
+            contents=context
+        )
 
+        # Update user memory
         if cuisine:
             memory.update_preference(
-                self.current_user, 
-                "favourite_cuisines", 
+                self.current_user,
+                "favourite_cuisines",
                 cuisine
             )
-        
+
         return response.text
-    
+
     def run(self):
         """Run the OrderEase agent"""
         print("=" * 50)
@@ -151,28 +150,29 @@ User preferences: {memory.get_recommendations(self.current_user)}
         print("Your Personal AI Concierge for Chennai")
         print("=" * 50)
         print("Type 'quit' to exit\n")
-   
+
+        # Get user name
         name = input("What's your name? ")
         memory.update_preference(self.current_user, "name", name)
         print(f"\nHello {name}! 👋 How can I help you today?")
         print("I can help you order food, shop online, or track your orders!\n")
-        
+
         while True:
             user_input = input("You: ").strip()
-            
+
             if user_input.lower() == "quit":
                 print("\nThank you for using OrderEase! 🙏 Goodbye!")
                 break
-            
+
             if not user_input:
                 continue
-            
+
             print("\nOrderEase: ", end="")
             response = self.process_message(user_input)
             print(response)
             print()
 
-
+# Run the agent
 if __name__ == "__main__":
     agent = OrderEaseAgent()
     agent.run()
