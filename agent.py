@@ -130,8 +130,10 @@ User preferences: {memory.get_recommendations(self.current_user)}
             context += f"\nAvailable products:\n{product_info}"
         
 
-        response = self.chat.send_message(context)
-        
+        response = self.client.models.generate_content(
+    model="gemini-2.0-flash",
+    contents=context
+)
 
         if cuisine:
             memory.update_preference(
