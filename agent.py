@@ -5,7 +5,7 @@
 
 
 import os
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 from tools import (
     search_restaurants,
@@ -23,7 +23,7 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise ValueError("GEMINI_API_KEY not found! Please add it to your .env file")
-genai.configure(api_key=GEMINI_API_KEY)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 SYSTEM_PROMPT = """
 You are OrderEase, a friendly and intelligent personal concierge agent 
@@ -63,11 +63,8 @@ Always greet users by name if you know them!
 
 class OrderEaseAgent:
     def __init__(self):
-        self.model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            system_instruction=SYSTEM_PROMPT
-        )
-        self.chat = self.model.start_chat(history=[])
+        self.client = client
+self.chat_history = []
         self.current_user = "user_1"
         self.current_order = None
     
