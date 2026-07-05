@@ -26,5 +26,7 @@ OrderEase is an AI-powered personal concierge agent built using Google's Gemini 
 ## 🚀 How to Run
 
 1. Clone the repository:
+
+   
 ##Note: This is a student project for educational purposes only. 
 Not affiliated with OrderEase Inc. 
