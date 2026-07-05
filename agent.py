@@ -129,7 +129,7 @@ User preferences: {memory.get_recommendations(self.current_user)}
 
         # Get response from Gemini
         response = self.client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             contents=context
         )
 
